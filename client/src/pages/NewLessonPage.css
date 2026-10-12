@@ -89,16 +89,26 @@
 .write-formats {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
-.write-format {
+.write-format,
+.write-field .write-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 38px;
+  margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.45);
   background: transparent;
   color: #ffffff;
   font: inherit;
   font-size: 14px;
-  padding: 8px 14px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 0 16px;
   border-radius: 999px;
   cursor: pointer;
 }
@@ -118,18 +128,6 @@
 .write-format:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-.write-image {
-  display: inline-block;
-  margin-top: 0;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 650;
-  padding: 8px 16px;
-  border-radius: 999px;
-  cursor: pointer;
 }
 
 .write-image input {
