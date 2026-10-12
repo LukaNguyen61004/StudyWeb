@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: drinkwine
+      POSTGRES_PASSWORD: drinkwine
+      POSTGRES_DB: drinkwine
+    ports:
+      - "5433:5432"
+    volumes:
+      - drinkwine-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drinkwine -d drinkwine"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  drinkwine-postgres:

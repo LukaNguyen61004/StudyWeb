@@ -1,0 +1,163 @@
+.write-page {
+  position: relative;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 64px;
+  background: #111111;
+  color: #f3f3f3;
+}
+
+.write-form {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  margin: 0;
+}
+
+.write-form a {
+  color: #ffffff;
+}
+
+.write-form h1 {
+  margin: 0 0 22px;
+  font-size: 32px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.write-field {
+  margin: 0 0 16px;
+}
+
+.write-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.write-field input,
+.write-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  color: #ffffff;
+  background: rgba(17, 17, 17, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  padding: 12px 14px;
+  font: inherit;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  outline: none;
+}
+
+.write-field textarea {
+  min-height: 240px;
+  resize: vertical;
+}
+
+.write-field input:focus,
+.write-field textarea:focus {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+.write-field input::placeholder,
+.write-field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.write-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #f0b4b4;
+}
+
+.write-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.write-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.write-format {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.write-format-bold {
+  font-weight: 700;
+}
+
+.write-format-italic {
+  font-style: italic;
+}
+
+.write-format-underline {
+  text-decoration: underline;
+}
+
+.write-format:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.write-image {
+  display: inline-block;
+  margin-top: 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 650;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.write-image input {
+  display: none;
+}
+
+.write-tools .write-hint,
+.write-tools .write-error {
+  flex-basis: 100%;
+}
+
+.write-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.write-submit {
+  display: block;
+  margin: 8px auto 0;
+  border: 0;
+  background: #ffffff;
+  color: #161616;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  padding: 10px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+}
