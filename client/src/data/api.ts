@@ -1,3 +1,4 @@
+import { apiUrl } from './apiBase'
 import type { Lesson } from './lessons'
 
 export type LessonInput = {
@@ -25,7 +26,7 @@ async function readError(response: Response) {
 }
 
 export async function fetchLessons() {
-  const response = await fetch('/api/lessons')
+  const response = await fetch(apiUrl('/api/lessons'))
   if (!response.ok) {
     throw new Error(await readError(response))
   }
@@ -34,7 +35,7 @@ export async function fetchLessons() {
 }
 
 export async function fetchLesson(id: string) {
-  const response = await fetch(`/api/lessons/${encodeURIComponent(id)}`)
+  const response = await fetch(apiUrl(`/api/lessons/${encodeURIComponent(id)}`))
   if (response.status === 404) {
     return null
   }
@@ -46,7 +47,7 @@ export async function fetchLesson(id: string) {
 }
 
 export async function createLesson(input: LessonInput) {
-  const response = await fetch('/api/lessons', {
+  const response = await fetch(apiUrl('/api/lessons'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -61,7 +62,7 @@ export async function createLesson(input: LessonInput) {
 export async function uploadImage(file: File) {
   const body = new FormData()
   body.append('image', file)
-  const response = await fetch('/api/uploads', {
+  const response = await fetch(apiUrl('/api/uploads'), {
     method: 'POST',
     body,
   })
@@ -73,7 +74,7 @@ export async function uploadImage(file: File) {
 }
 
 export async function updateLesson(id: string, input: LessonInput) {
-  const response = await fetch(`/api/lessons/${encodeURIComponent(id)}`, {
+  const response = await fetch(apiUrl(`/api/lessons/${encodeURIComponent(id)}`), {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),

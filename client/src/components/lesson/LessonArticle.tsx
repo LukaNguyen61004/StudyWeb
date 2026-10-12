@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import LessonInline from './LessonInline'
+import { apiUrl } from '../../data/apiBase'
 import { splitLessonContent } from '../../data/lessonContent'
 import type { Lesson } from '../../data/lessons'
 import './LessonArticle.css'
@@ -19,7 +20,7 @@ function LessonArticle({ lesson }: LessonArticleProps) {
       {cover && !coverFailed ? (
         <img
           className="lesson-article-cover"
-          src={cover}
+          src={apiUrl(cover)}
           alt=""
           onError={() => setCoverFailed(true)}
         />
@@ -30,7 +31,7 @@ function LessonArticle({ lesson }: LessonArticleProps) {
         <div className="lesson-article-content">
           {parts.map((part, index) =>
             part.type === 'image' ? (
-              <img key={`${part.url}-${index}`} className="lesson-article-inline" src={part.url} alt="" />
+              <img key={`${part.url}-${index}`} className="lesson-article-inline" src={apiUrl(part.url)} alt="" />
             ) : (
               <LessonInline key={`text-${index}`} text={part.text} />
             ),

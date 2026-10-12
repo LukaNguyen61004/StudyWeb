@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-const uploadDirectory = path.resolve('uploads')
+const uploadDirectory = path.resolve(process.env.UPLOAD_DIR || 'uploads')
 
 const extensions: Record<string, string> = {
   'image/jpeg': 'jpg',

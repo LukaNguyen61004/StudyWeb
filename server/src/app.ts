@@ -5,9 +5,14 @@ import { HttpError } from './lib/httpError.js'
 import { lessonRouter } from './routes/lesson.route.js'
 import { uploadRouter } from './routes/upload.route.js'
 
+const clientOrigins = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter((origin) => origin !== '')
+
 const app = express()
 
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors({ origin: clientOrigins }))
 app.use(express.json())
 
 app.get('/api/health', (_req, res) => {

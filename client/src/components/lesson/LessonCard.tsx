@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { apiUrl } from '../../data/apiBase'
 import { lessonImageUrl } from '../../data/lessonImage'
 import type { Lesson } from '../../data/lessons'
 import './LessonCard.css'
@@ -18,7 +19,7 @@ function LessonCard({ lesson }: LessonCardProps) {
       {showImage ? (
         <img
           className="lesson-card-image"
-          src={imageUrl ?? undefined}
+          src={imageUrl ? apiUrl(imageUrl) : undefined}
           alt=""
           onError={() => setImageFailed(true)}
         />
