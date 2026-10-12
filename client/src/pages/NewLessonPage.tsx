@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import FormatToolbar from '../components/lesson/FormatToolbar'
 import ImageUploadButton from '../components/lesson/ImageUploadButton'
+import LessonFileButton from '../components/lesson/LessonFileButton'
 import SnowBackdrop from '../components/SnowBackdrop'
 import { createLesson } from '../data/api'
 import { insertImageUrl, wrapSelection, type TextFormat } from '../data/lessonContent'
@@ -111,6 +112,17 @@ function NewLessonPage() {
                 })
               }}
             />
+            <LessonFileButton
+              disabled={saving}
+              onLoaded={(draft) => {
+                setContent(draft.content)
+                if (title.trim() === '') {
+                  setTitle(draft.title)
+                }
+                setErrors((current) => ({ ...current, title: undefined, content: undefined }))
+                setFormError(draft.notice)
+              }}
+            />
             <ImageUploadButton
               disabled={saving}
               onUploaded={(url) => {
@@ -126,6 +138,9 @@ function NewLessonPage() {
                 })
               }}
             />
+            <span className="write-hint">
+              Tải file .txt, .md hoặc .docx để điền bài. Dòng đầu thành tiêu đề nếu ô tiêu đề đang trống.
+            </span>
           </span>
           {errors.content ? <span className="write-error">{errors.content}</span> : null}
         </p>
