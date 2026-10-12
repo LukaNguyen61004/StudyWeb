@@ -37,3 +37,8 @@ export const updateLesson: RequestHandler = async (req, res) => {
   )
   res.json(lesson)
 }
+
+export const deleteLesson: RequestHandler = async (req, res) => {
+  await lessonService.deleteLesson(routeId(req.params.id))
+  res.status(204).end()
+}

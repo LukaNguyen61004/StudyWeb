@@ -25,3 +25,10 @@ export async function updateLesson(id: string, input: LessonInput) {
   }
   return lesson
 }
+
+export async function deleteLesson(id: string) {
+  const removed = await lessonRepository.remove(id)
+  if (!removed) {
+    throw new HttpError(404, 'Không có bài này.')
+  }
+}

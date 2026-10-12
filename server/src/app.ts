@@ -5,14 +5,28 @@ import { HttpError } from './lib/httpError.js'
 import { lessonRouter } from './routes/lesson.route.js'
 import { uploadRouter } from './routes/upload.route.js'
 
+function normalizeOrigin(value: string) {
+  return value.trim().replace(/\/+$/, '')
+}
+
 const clientOrigins = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173')
   .split(',')
-  .map((origin) => origin.trim())
+  .map(normalizeOrigin)
   .filter((origin) => origin !== '')
 
 const app = express()
 
-app.use(cors({ origin: clientOrigins }))
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || clientOrigins.includes(normalizeOrigin(origin))) {
+        callback(null, true)
+        return
+      }
+      callback(null, false)
+    },
+  }),
+)
 app.use(express.json())
 
 app.get('/api/health', (_req, res) => {

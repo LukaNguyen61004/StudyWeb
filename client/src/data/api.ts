@@ -85,3 +85,12 @@ export async function updateLesson(id: string, input: LessonInput) {
 
   return (await response.json()) as Lesson
 }
+
+export async function deleteLesson(id: string) {
+  const response = await fetch(apiUrl(`/api/lessons/${encodeURIComponent(id)}`), {
+    method: 'DELETE',
+  })
+  if (!response.ok) {
+    throw new Error(await readError(response))
+  }
+}

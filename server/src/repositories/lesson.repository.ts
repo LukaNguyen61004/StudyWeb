@@ -43,3 +43,15 @@ export async function update(id: string, input: LessonInput) {
     throw error
   }
 }
+
+export async function remove(id: string) {
+  try {
+    await prisma.lesson.delete({ where: { id } })
+    return true
+  } catch (error) {
+    if (isMissingRow(error)) {
+      return false
+    }
+    throw error
+  }
+}
