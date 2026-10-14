@@ -139,7 +139,7 @@ function NewLessonPage() {
               }}
             />
             <span className="write-hint">
-              Tải file .txt, .md hoặc .docx để điền bài. Dòng đầu thành tiêu đề nếu ô tiêu đề đang trống.
+              Tải file .txt, .md, .docx, .pdf hoặc .pptx để điền bài. PDF và PowerPoint chỉ lấy phần chữ. Dòng đầu thành tiêu đề nếu ô tiêu đề đang trống.
             </span>
           </span>
           {errors.content ? <span className="write-error">{errors.content}</span> : null}

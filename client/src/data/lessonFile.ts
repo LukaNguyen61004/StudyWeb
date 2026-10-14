@@ -1,8 +1,13 @@
+import JSZip from 'jszip'
 import mammoth from 'mammoth'
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist'
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+
+GlobalWorkerOptions.workerSrc = pdfWorker
 
 const maxTitleLength = 200
 const maxContentLength = 100000
-const maxFileBytes = 8 * 1024 * 1024
+const maxFileBytes = 20 * 1024 * 1024
 
 export type LessonFileDraft = {
   title: string
@@ -13,17 +18,27 @@ export type LessonFileDraft = {
 export async function readLessonFile(file: File): Promise<LessonFileDraft> {
   const name = file.name.toLowerCase()
   if (file.size > maxFileBytes) {
-    throw new Error('File tối đa 8 MB.')
+    throw new Error('File tối đa 20 MB.')
+  }
+  if (name.endsWith('.ppt') && !name.endsWith('.pptx')) {
+    throw new Error('File .ppt cũ không đọc được. Hãy lưu dạng .pptx rồi tải lại.')
   }
 
   const raw = name.endsWith('.docx')
     ? await readDocx(file)
-    : name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.markdown')
-      ? await readPlainText(file)
-      : null
+    : name.endsWith('.pdf')
+      ? await readPdf(file)
+      : name.endsWith('.pptx')
+        ? await readPptx(file)
+        : name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.markdown')
+          ? await readPlainText(file)
+          : null
 
   if (raw === null) {
-    throw new Error('Chỉ nhận file .txt, .md hoặc .docx.')
+    throw new Error('Chỉ nhận file .txt, .md, .docx, .pdf hoặc .pptx.')
+  }
+  if (raw.trim() === '') {
+    throw new Error('File không có chữ để lấy.')
   }
 
   const draft = splitTitle(raw, filenameTitle(file.name))
@@ -48,6 +63,141 @@ async function readPlainText(file: File) {
     return new TextDecoder('utf-16be').decode(buffer)
   }
   return new TextDecoder('utf-8').decode(buffer)
+}
+
+async function readPdf(file: File) {
+  const data = new Uint8Array(await file.arrayBuffer())
+  try {
+    const pdf = await getDocument({ data }).promise
+    try {
+      const pages: string[] = []
+      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+        const page = await pdf.getPage(pageNumber)
+        const content = await page.getTextContent()
+        const text = pageToText(content.items)
+        if (text !== '') {
+          pages.push(text)
+        }
+      }
+      const text = pages.join('\n\n').trim()
+      if (text === '') {
+        throw new Error('PDF này không có chữ để lấy. File scan ảnh thì không đọc được.')
+      }
+      return text
+    } finally {
+      await pdf.destroy()
+    }
+  } catch (error) {
+    if (error instanceof Error && (error.message.startsWith('PDF này') || error.message.startsWith('File không'))) {
+      throw error
+    }
+    if (error instanceof Error && /password/i.test(error.message)) {
+      throw new Error('PDF này có mật khẩu, không đọc được.')
+    }
+    throw new Error('Không đọc được file PDF.')
+  }
+}
+
+async function readPptx(file: File) {
+  const zip = await JSZip.loadAsync(await file.arrayBuffer())
+  const names = Object.keys(zip.files)
+    .filter((entry) => /^ppt\/slides\/slide\d+\.xml$/.test(entry))
+    .sort((left, right) => slideNumber(left) - slideNumber(right))
+  const slides: string[] = []
+
+  for (const entry of names) {
+    const xml = await zip.files[entry].async('string')
+    const lines = xml
+      .split(/<\/a:p>/)
+      .map((paragraph) =>
+        [...paragraph.matchAll(/<a:t(?:\s[^>]*)?>([\s\S]*?)<\/a:t>/g)]
+          .map((match) => decodeXml(match[1]))
+          .join('')
+          .replace(/\s+/g, ' ')
+          .trim(),
+      )
+      .filter((line) => line !== '')
+    if (lines.length > 0) {
+      slides.push(lines.join('\n'))
+    }
+  }
+
+  const text = slides.join('\n\n').trim()
+  if (text === '') {
+    throw new Error('File PowerPoint không có chữ để lấy.')
+  }
+  return text
+}
+
+function slideNumber(name: string) {
+  const match = name.match(/slide(\d+)\.xml$/)
+  return match ? Number(match[1]) : 0
+}
+
+function decodeXml(value: string) {
+  return value
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, num: string) => String.fromCodePoint(Number(num)))
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+}
+
+function pageToText(items: readonly unknown[]) {
+  const rows: { y: number; parts: { x: number; end: number; text: string }[] }[] = []
+
+  for (const item of items) {
+    if (!isPdfText(item) || item.str === '') {
+      continue
+    }
+    const x = Number(item.transform[4] ?? 0)
+    const y = Number(item.transform[5] ?? 0)
+    const width = typeof item.width === 'number' ? item.width : 0
+    let row = rows.find((candidate) => Math.abs(candidate.y - y) < 2)
+    if (!row) {
+      row = { y, parts: [] }
+      rows.push(row)
+    }
+    row.parts.push({ x, end: x + width, text: item.str })
+  }
+
+  rows.sort((left, right) => right.y - left.y)
+  return rows
+    .map((row) => joinPdfLine(row.parts))
+    .filter((line) => line !== '')
+    .join('\n')
+}
+
+function joinPdfLine(parts: { x: number; end: number; text: string }[]) {
+  const ordered = [...parts].sort((left, right) => left.x - right.x)
+  let line = ''
+  let end = 0
+
+  for (const part of ordered) {
+    if (line === '' || line.endsWith(' ') || part.text.startsWith(' ')) {
+      line += part.text
+    } else if (part.x - end > 1.5) {
+      line += ` ${part.text}`
+    } else {
+      line += part.text
+    }
+    end = Math.max(end, part.end)
+  }
+
+  return line.replace(/[ \t]{2,}/g, ' ').trim()
+}
+
+function isPdfText(item: unknown): item is { str: string; transform: number[]; width?: number } {
+  return (
+    typeof item === 'object' &&
+    item !== null &&
+    'str' in item &&
+    typeof item.str === 'string' &&
+    'transform' in item &&
+    Array.isArray(item.transform)
+  )
 }
 
 async function readDocx(file: File) {

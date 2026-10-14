@@ -4,7 +4,7 @@ function SiteNav() {
   return (
     <nav className="site-nav" aria-label="Chính">
       <Link to="/" className="site-nav-brand">
-        Bệnh Alzheimer
+        Sử dụng thuốc - LT
       </Link>
       <div className="site-nav-links">
         <Link to="/" className="site-nav-link">

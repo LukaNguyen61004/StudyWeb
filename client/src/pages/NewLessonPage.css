@@ -137,6 +137,7 @@
 .write-tools .write-hint,
 .write-tools .write-error {
   flex-basis: 100%;
+  order: 1;
 }
 
 .write-hint {

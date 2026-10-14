@@ -50,7 +50,19 @@ function HomePage() {
             justifyContent: 'center',
           }}
         >
-          <h1 style={{ margin: 0, fontSize: '64px' }}>Bệnh Alzheimer</h1>
+          <h1
+            style={{
+              margin: 0,
+              width: 'min(920px, 100%)',
+              boxSizing: 'border-box',
+              padding: '0 24px',
+              fontSize: 'clamp(36px, 6vw, 64px)',
+              lineHeight: 1.15,
+              textAlign: 'center',
+            }}
+          >
+            Sử dụng thuốc - LT
+          </h1>
         </div>
 
         <main className="home-board">

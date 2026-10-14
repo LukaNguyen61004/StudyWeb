@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(560px, calc(100% - 28px));
+  width: min(720px, calc(100% - 28px));
   box-sizing: border-box;
   padding: 7px 7px 7px 20px;
   border-radius: 999px;
@@ -25,9 +25,11 @@
 
 .site-nav-brand {
   color: #fff;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 650;
   letter-spacing: -0.03em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .site-nav-links {

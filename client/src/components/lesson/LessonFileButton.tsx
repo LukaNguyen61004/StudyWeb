@@ -34,7 +34,7 @@ function LessonFileButton({ disabled, onLoaded }: LessonFileButtonProps) {
         {reading ? 'Đang đọc file...' : 'Tải file'}
         <input
           type="file"
-          accept=".txt,.md,.markdown,.docx,text/plain,text/markdown"
+          accept=".txt,.md,.markdown,.docx,.pdf,.pptx,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation"
           disabled={disabled || reading}
           onChange={handleChange}
         />
